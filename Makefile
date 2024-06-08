@@ -4,6 +4,9 @@
 #
 # See run.sh for more in-depth comments on what each target does.
 
+venv:
+	bash run.sh venv
+
 build:
 	bash run.sh build
 
