@@ -3,7 +3,7 @@
 ############################
 
 [project]
-name = "cloude-course-project"
+name = "cloud-course-project"
 description = "My package description"
 authors = [{ name = "<your name>", email = "some-email@gmail.com" }]
 readme = "README.md"
@@ -39,7 +39,7 @@ static-code-qa = [
 # - automatically apply formatting
 # - show enhanced autocompletion for stubs libraries
 # See .vscode/settings.json to see how VS Code is configured to use these tools
-dev = ["cloude-course-project[test,release,static-code-qa]"]
+dev = ["cloud-course-project[test,release,static-code-qa]"]
 
 [build-system]
 # Minimum requirements for the build system to execute.

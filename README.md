@@ -1,9 +1,9 @@
-# cloude-course-project
+# cloud-course-project
 
 ## Quick start
 
 ```bash
-pip install cloude-course-project
+pip install cloud-course-project
 ```
 
 ```python
@@ -24,7 +24,7 @@ You will need the following installed on your machine to develop on this codebas
 
 ```bash
 # clone the repo
-git clone https://github.com/<your github username>/cloude-course-project.git
+git clone https://github.com/<your github username>/cloud-course-project.git
 
 # install the dev dependencies
 make install

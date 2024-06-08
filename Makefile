@@ -13,6 +13,9 @@ build:
 clean:
 	bash run.sh clean
 
+clean-venv:
+	bash run.sh clean:venv
+
 help:
 	bash run.sh help
 

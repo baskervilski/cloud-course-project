@@ -10,7 +10,7 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MINIMUM_TEST_COVERAGE_PERCENT=0
 
 # Activate the environment if it exists
-[[ -d "$THIS_DIR/venv" ]] && source venv/bin/activate
+[[ -d "$THIS_DIR/venv" ]] && source venv/bin/activate || NO_VENV=true
 
 ##########################
 # --- Task Functions --- #
@@ -21,11 +21,20 @@ function venv {
     python3 -m venv venv
 }
 
+function stop-if-not-in-venv {
+    if [ -z "$VIRTUAL_ENV" ] & [ "$NO_VENV" == "true" ]; then
+        echo "Not in a venv and no venv dir found. Run 'make venv install' to create one."
+        exit 1
+    fi
+}
 
 # install core and development Python dependencies into the currently activated venv
 function install {
+    stop-if-not-in-venv
     python -m pip install --upgrade pip
-    python -m pip install --editable "$THIS_DIR/[dev]"
+    python -m pip install "uv~=0.2.9"
+    python -m uv pip install --editable "$THIS_DIR/[dev]"
+    pre-commit install
 }
 
 # run linting, formatting, and other static code quality tools
@@ -42,6 +51,7 @@ function lint:ci {
 
 # execute tests that are not marked as `slow`
 function test:quick {
+    stop-if-not-in-venv
     run-tests -m "not slow" ${@:-"$THIS_DIR/tests/"}
 }
 
@@ -54,6 +64,7 @@ function test:ci {
 
 # (example) ./run.sh test tests/test_states_info.py::test__slow_add
 function run-tests {
+    stop-if-not-in-venv
     PYTEST_EXIT_STATUS=0
 
     # clean the test-reports dir
@@ -88,11 +99,13 @@ function test:wheel-locally {
 
 # serve the html test coverage report on localhost:8000
 function serve-coverage-report {
+    stop-if-not-in-venv
     python -m http.server --directory "$THIS_DIR/test-reports/htmlcov/" 8000
 }
 
 # build a wheel and sdist from the Python source code
 function build {
+    stop-if-not-in-venv
     python -m build --sdist --wheel "$THIS_DIR/"
 }
 
@@ -109,6 +122,7 @@ function release:prod {
 }
 
 function publish:test {
+    stop-if-not-in-venv
     try-load-dotenv || true
     twine upload dist/* \
         --repository testpypi \
@@ -117,6 +131,7 @@ function publish:test {
 }
 
 function publish:prod {
+    stop-if-not-in-venv
     try-load-dotenv || true
     twine upload dist/* \
         --repository pypi \
@@ -143,6 +158,11 @@ function clean {
       -name "*.pyc" \
       -not -path "*env/*" \
       -exec rm {} +
+}
+
+function clean:venv {
+    deactivate || true
+    rm -rf venv
 }
 
 # export the contents of .env as environment variables

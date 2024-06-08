@@ -1,1 +1,1 @@
-"""Automated tests for cloude-course-project."""
+"""Automated tests for cloud-course-project."""
