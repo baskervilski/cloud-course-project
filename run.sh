@@ -28,6 +28,11 @@ function stop-if-not-in-venv {
     fi
 }
 
+function lockfile {
+    stop-if-not-in-venv
+    python -m uv pip compile --output-file requirements.txt pyproject.toml
+}
+
 # install core and development Python dependencies into the currently activated venv
 function install {
     stop-if-not-in-venv

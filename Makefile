@@ -22,6 +22,9 @@ help:
 install:
 	bash run.sh install
 
+lockfile:
+	bash run.sh lockfile
+
 lint:
 	bash run.sh lint
 
