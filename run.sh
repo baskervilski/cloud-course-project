@@ -7,7 +7,7 @@ set -e
 #####################
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-MINIMUM_TEST_COVERAGE_PERCENT=0
+MINIMUM_TEST_COVERAGE_PERCENT=70
 
 # Activate the environment if it exists
 [[ -d "$THIS_DIR/venv" ]] && source venv/bin/activate || NO_VENV=true

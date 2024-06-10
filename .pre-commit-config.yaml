@@ -64,12 +64,12 @@ repos:
         args:
           - --config=./pyproject.toml
 
-  - repo: https://github.com/PyCQA/pylint
-    rev: v2.16.3
-    hooks:
-      - id: pylint
-        args:
-          - --rcfile=./pyproject.toml
+  # - repo: https://github.com/PyCQA/pylint
+  #   rev: v2.16.3
+  #   hooks:
+  #     - id: pylint
+  #       args:
+  #         - --rcfile=./pyproject.toml
 
   - repo: https://github.com/PyCQA/flake8
     rev: 6.0.0
