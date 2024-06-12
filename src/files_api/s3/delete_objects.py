@@ -6,7 +6,7 @@ import boto3
 
 try:
     from mypy_boto3_s3 import S3Client
-except ImportError:
+except ImportError:  # pragma:no-cover
     ...
 
 

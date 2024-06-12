@@ -6,6 +6,11 @@ from typing import (
     Tuple,
 )
 
+import boto3
+import boto3.exceptions
+import botocore
+import botocore.exceptions
+
 try:
     from mypy_boto3_s3 import S3Client
     from mypy_boto3_s3.type_defs import (
@@ -30,9 +35,14 @@ def object_exists_in_s3(bucket_name: str, object_key: str, s3_client: Optional["
     """
     s3_client = s3_client or S3Client()
 
-    response = s3_client.head_object(Bucket=bucket_name, Key=object_key)
+    try:
+        response = s3_client.head_object(Bucket=bucket_name, Key=object_key)
+        return response is not None
+    except botocore.exceptions.ClientError as err:
+        if "Not Found" in str(err):
+            return False
 
-    return response is not None
+    return None
 
 
 def fetch_s3_object(
@@ -51,7 +61,7 @@ def fetch_s3_object(
     """
     s3_client = s3_client or S3Client()
     obj = s3_client.get_object(Bucket=bucket_name, Key=object_key)
-    return obj
+    return obj["Body"].read()
 
 
 def fetch_s3_objects_using_page_token(
@@ -72,7 +82,7 @@ def fetch_s3_objects_using_page_token(
         1. Possibly empty list of objects in the current page.
         2. Next continuation token if there are more pages, otherwise None.
     """
-    s3_client = s3_client or S3Client()
+    s3_client = s3_client or boto3.client("s3")
 
     objects = s3_client.list_objects_v2(
         Bucket=bucket_name, ContinuationToken=continuation_token, MaxKeys=max_keys or DEFAULT_MAX_KEYS
@@ -99,8 +109,8 @@ def fetch_s3_objects_metadata(
         1. Possibly empty list of objects in the current page.
         2. Next continuation token if there are more pages, otherwise None.
     """
-    s3_client = s3_client or S3Client()
+    s3_client = s3_client or boto3.client("s3")
 
-    objects = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+    objects = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix or "", MaxKeys=max_keys)
 
-    return objects["Contents"], objects["NextContinuationToken"]
+    return objects["Contents"], objects.get("NextContinuationToken")

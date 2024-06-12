@@ -1,3 +1,4 @@
+# pragma: no-cover
 """All configuration goes here."""
 
 import os
