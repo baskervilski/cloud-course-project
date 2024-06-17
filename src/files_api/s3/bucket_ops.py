@@ -53,7 +53,7 @@ def list_bucket_objects_client_api(bucket_name: str, s3_client: Optional[S3Clien
     return [obj["Key"] for obj in response.get("Contents", [])]
 
 
-def delete_bucket(bucket_name: str, s3_client) -> Optional["EmptyResponseMetadataTypeDef"]:
+def delete_bucket(bucket_name: str, s3_client: Optional[S3Client] = None) -> Optional["EmptyResponseMetadataTypeDef"]:
     """
     Delete an S3 bucket, including all its objects.
 

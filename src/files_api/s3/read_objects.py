@@ -46,10 +46,8 @@ def object_exists_in_s3(bucket_name: str, object_key: str, s3_client: Optional["
 
 
 def fetch_s3_object(
-    bucket_name: str,
-    object_key: str,
-    s3_client: Optional["S3Client"] = None,
-) -> "GetObjectOutputTypeDef":
+    bucket_name: str, object_key: str, s3_client: Optional["S3Client"] = None
+) -> Optional["GetObjectOutputTypeDef"]:
     """
     Fetch metadata of an object in the S3 bucket.
 
@@ -59,9 +57,33 @@ def fetch_s3_object(
 
     :return: Metadata of the object.
     """
-    s3_client = s3_client or S3Client()
-    obj = s3_client.get_object(Bucket=bucket_name, Key=object_key)
-    return obj["Body"].read()
+    s3_client = s3_client or boto3.client("s3")
+    try:
+        return s3_client.get_object(Bucket=bucket_name, Key=object_key)
+    except botocore.exceptions.ClientError as err:
+        if "Not Found" in str(err):
+            return None
+    return None
+
+
+def fetch_s3_object_body(
+    bucket_name: str,
+    object_key: str,
+    s3_client: Optional["S3Client"] = None,
+) -> Optional[bytes]:
+    """
+    Fetch the Body of an object in the S3 bucket.
+
+    :param bucket_name: Name of the S3 bucket.
+    :param object_key: Key of the object to fetch.
+    :param s3_client: Optional S3 client to use. If not provided, a new client will be created.
+
+    :return: Body of the object.
+    """
+    s3_client = s3_client or boto3.client("s3")
+    obj = fetch_s3_object(bucket_name, object_key, s3_client)
+    body = obj.get("Body").read() if obj else None
+    return body
 
 
 def fetch_s3_objects_using_page_token(

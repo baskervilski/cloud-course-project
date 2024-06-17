@@ -8,4 +8,4 @@ PROJECT_DIR = (THIS_DIR / "../").resolve()
 DEFAULT_REGION = "eu-central-1"
 TEST_BUCKET_NAME = "test-bucket"
 TEST_OBJECT_KEY = "dummy_object.txt"
-TEST_OBJECT_CONTENT = ""
+TEST_OBJECT_CONTENT = "Hello from the test object!"

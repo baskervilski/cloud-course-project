@@ -1,20 +1,17 @@
 """Example pytest fixture."""
 
 import os
+from typing import Generator
 
-import boto3
 import pytest
 from moto import mock_aws
-from mypy_boto3_s3 import S3Client
 
+from files_api.config import BUCKET_NAME
 from files_api.s3.bucket_ops import (
     create_bucket,
     delete_bucket,
 )
-from tests.consts import (
-    DEFAULT_REGION,
-    TEST_BUCKET_NAME,
-)
+from tests.consts import DEFAULT_REGION
 
 # @pytest.fixture(scope="session")
 # def test_session_id() -> str:
@@ -32,15 +29,32 @@ def point_away_from_aws():
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
 
-@pytest.fixture()
-def s3_client():
-    """TODO."""
+@pytest.fixture(scope="function")
+def mocked_aws() -> Generator[None, None, None]:
+    """
+    Set up a mocked AWS environment for testing and clean up after the test.
+    """
     with mock_aws():
+        # Set the environment variables to point away from AWS
         point_away_from_aws()
-        client: S3Client = boto3.client("s3")
 
-        create_bucket(bucket_name=TEST_BUCKET_NAME, region=DEFAULT_REGION, s3_client=client)
+        # # 1. Create an S3 bucket
+        # s3_client = boto3.client("s3")
+        # s3_client.create_bucket(Bucket=BUCKET_NAME)
 
-        yield client
+        yield
 
-        delete_bucket(bucket_name=TEST_BUCKET_NAME, s3_client=client)
+        # # 4. Clean up/Teardown by deleting the bucket
+        # response = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
+        # for obj in response.get("Contents", []):
+        #     s3_client.delete_object(Bucket=BUCKET_NAME, Key=obj["Key"])
+
+        # s3_client.delete_bucket(Bucket=BUCKET_NAME)
+
+
+@pytest.fixture(scope="function")
+def mock_bucket(mocked_aws) -> Generator:
+    """Create a test bucket for each test function."""
+    create_bucket(BUCKET_NAME, DEFAULT_REGION)
+    yield BUCKET_NAME
+    delete_bucket(BUCKET_NAME)

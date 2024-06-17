@@ -1,3 +1,5 @@
+import boto3
+
 from files_api.s3.bucket_ops import (
     create_bucket,
     delete_bucket,
@@ -5,8 +7,10 @@ from files_api.s3.bucket_ops import (
 from files_api.s3.write_objects import upload_s3_object
 
 
-def test_create_and_delete_bucket(s3_client):
+def test_create_and_delete_bucket(mocked_aws):
     """Selfexplanatory."""
+
+    s3_client = boto3.client("s3")
     tmp_bucket_name = "tmp-bucket-123"
 
     # Verify that the bucket doesn't exist at first
